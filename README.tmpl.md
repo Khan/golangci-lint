@@ -1,7 +1,6 @@
 # GolangCI-Lint
 
-[![Build Status](https://travis-ci.com/golangci/golangci-lint.svg?branch=master)](https://travis-ci.com/golangci/golangci-lint)
-[![GolangCI](https://golangci.com/badges/github.com/golangci/golangci-lint.svg)](https://golangci.com)
+![Build Status](https://github.com/golangci/golangci-lint/workflows/CI/badge.svg)
 [![License](https://img.shields.io/github/license/golangci/golangci-lint)](/LICENSE)
 [![Release](https://img.shields.io/github/release/golangci/golangci-lint.svg)](https://github.com/golangci/golangci-lint/releases/latest)
 [![Docker](https://img.shields.io/docker/pulls/golangci/golangci-lint)](https://hub.docker.com/r/golangci/golangci-lint)
@@ -15,7 +14,7 @@ Follow the news and releases on our [twitter](https://twitter.com/golangci) and 
 
 Sponsored by [GolangCI.com](https://golangci.com): SaaS service for running linters on GitHub pull requests. Free for Open Source.
 
-<a href="https://golangci.com/"><img src="docs/go.png" width="250px"></a>
+<a href="https://golangci.com/"><img src="assets/go.png" width="250px"></a>
 
 - [GolangCI-Lint](#golangci-lint)
   - [Demo](#demo)
@@ -44,6 +43,10 @@ Sponsored by [GolangCI.com](https://golangci.com): SaaS service for running lint
   - [Configuration](#configuration)
     - [Command-Line Options](#command-line-options)
     - [Config File](#config-file)
+  - [Custom Linters](#custom-linters)
+    - [Create a Copy of `golangci-lint` that Can Run with Plugins](#create-a-copy-of-golangci-lint-that-can-run-with-plugins)
+    - [Configure Your Project for Linting](#configure-your-project-for-linting)
+    - [To Create Your Own Custom Linter](#to-create-your-own-custom-linter)
   - [False Positives](#false-positives)
     - [Nolint](#nolint)
   - [FAQ](#faq)
@@ -57,7 +60,7 @@ Sponsored by [GolangCI.com](https://golangci.com): SaaS service for running lint
 ## Demo
 
 <p align="center">
-  <img src="./docs/demo.svg" width="100%">
+  <img src="./assets/demo.svg" width="100%">
 </p>
 
 Short 1.5 min video demo of analyzing [beego](https://github.com/astaxie/beego).
@@ -108,13 +111,11 @@ docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:{{.LatestVersion}}
 
 ### Go
 
-Please, do not install `golangci-lint` by `go get`:
+Go source installations are supported for the two most recent Go releases.
 
-1. [`go.mod`](https://github.com/golangci/golangci-lint/blob/master/go.mod) replacement directive doesn't apply. It means you will be using patched version of `golangci-lint`.
-2. it's much slower than binary installation
-3. its stability depends on your Go version (e.g. on [this compiler Go <= 1.12 bug](https://github.com/golang/go/issues/29612)).
-4. it's not guaranteed to work: e.g. we've encountered a lot of issues with Go modules hashes.
-5. it allows installation from `master` branch which can't be considered stable.
+```bash
+GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@{{.LatestVersion}}
+```
 
 ## Trusted By
 
@@ -125,6 +126,7 @@ The following companies/products use golangci-lint:
 * [Red Hat OpenShift](https://github.com/openshift/telemeter)
 * [Yahoo](https://github.com/yahoo/yfuzz)
 * [IBM](https://github.com/ibm-developer/ibm-cloud-env-golang)
+* [Intuit](https://github.com/intuit)
 * [Xiaomi](https://github.com/XiaoMi/soar)
 * [Baidu](https://github.com/baidu/bfe)
 * [Samsung](https://github.com/samsung-cnct/cluster-api-provider-ssh)
@@ -299,7 +301,7 @@ GolangCI-Lint was created to fix the following issues with `gometalinter`:
 Benchmarks were executed on MacBook Pro (Retina, 13-inch, Late 2013), 2,4 GHz Intel Core i5, 8 GB 1600 MHz DDR3.
 It has 4 cores and concurrent linting as a default consuming all cores.
 Benchmark was run (and measured) automatically, see the code
-[here](https://github.com/golangci/golangci-lint/blob/master/test/bench_test.go) (`BenchmarkWithGometalinter`).
+[here](https://github.com/golangci/golangci-lint/blob/master/test/bench/bench_test.go) (`BenchmarkWithGometalinter`).
 
 We measure peak memory usage (RSS) by tracking of processes RSS every 5 ms.
 
@@ -389,7 +391,7 @@ Less `GOGC` values trigger garbage collection more frequently and golangci-lint 
 
 3. Don't fork to run shell commands
 
-All linters are vendored in the `/vendor` folder: their version is fixed, they are builtin
+All linters has their version fixed with go modules, they are builtin
 and you don't need to install them separately.
 
 ## Supported Linters
@@ -485,7 +487,7 @@ linters-settings:
 
 That is all the configuration that is required to run a custom linter in your project. Custom linters are enabled by default,
 but abide by the same rules as other linters. If the disable all option is specified either on command line or in 
-`.golang.yml` files `linters:disable-all: true`, custom linters will be disabled; they can be re-enabled by adding them 
+`.golangci.yml` files `linters:disable-all: true`, custom linters will be disabled; they can be re-enabled by adding them 
 to the `linters:enable` list, or providing the enabled option on the command line, `golangci-lint run -Eexample`.
 
 ### To Create Your Own Custom Linter
@@ -579,10 +581,7 @@ By doing this you won't create new issues in your code and can choose fix existi
 
 **How to use `golangci-lint` in CI (Continuous Integration)?**
 
-You have 2 choices:
-
-1. Use [GolangCI](https://golangci.com): this service is highly integrated with GitHub (issues are commented in the pull request) and uses a `golangci-lint` tool. For configuration use `.golangci.yml` (or toml/json).
-2. Use custom CI: just run `golangci-lint` in CI and check the exit code. If it's non-zero - fail the build. The main disadvantage is that you can't see issues in pull request code and would need to view the build log, then open the referenced source file to see the context.
+Run `golangci-lint` in CI and check the exit code. If it's non-zero - fail the build.
 
 We don't recommend vendoring `golangci-lint` in your repo: you will get troubles updating `golangci-lint`. Please, use recommended way to install with the shell script: it's very fast.
 

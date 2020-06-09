@@ -1,6 +1,21 @@
 Follow the news and releases on our [twitter](https://twitter.com/golangci) and our [blog](https://medium.com/golangci).
 There is the most valuable changes log:
 
+### May 2020
+1. Add new linters: `nolintlint`, `goerr113`
+2. Updated linters: `godot`
+
+### April 2020
+
+1. Add new linters: `testpackage`, `nestif`, `godot`, `gomodguard`, `asciicheck`
+2. Add  github actions output format
+3. Update linters: `wsl`, `gomodguard`, `gosec`
+4. Support `disabled-tags` setting for `gocritic`
+5. Mitigate OOM and "failed prerequisites"
+6. Self-isolate due to unexpected pandemics
+7. Support case-sensitive excludes
+8. Allow granular re-enabling excludes by ID, e.g. `EXC0002`
+
 ### September 2019
 
 1. Support go1.13

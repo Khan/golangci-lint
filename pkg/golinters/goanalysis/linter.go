@@ -10,6 +10,7 @@ import (
 	"golang.org/x/tools/go/analysis"
 
 	"github.com/golangci/golangci-lint/pkg/lint/linter"
+	libpackages "github.com/golangci/golangci-lint/pkg/packages"
 	"github.com/golangci/golangci-lint/pkg/result"
 )
 
@@ -142,6 +143,31 @@ func (lnt *Linter) configure() error {
 	}
 
 	return nil
+}
+
+func buildIssuesFromErrorsForTypecheckMode(errs []error, lintCtx *linter.Context) ([]result.Issue, error) {
+	var issues []result.Issue
+	uniqReportedIssues := map[string]bool{}
+	for _, err := range errs {
+		itErr, ok := errors.Cause(err).(*IllTypedError)
+		if !ok {
+			return nil, err
+		}
+		for _, err := range libpackages.ExtractErrors(itErr.Pkg) {
+			i, perr := parseError(err)
+			if perr != nil { // failed to parse
+				if uniqReportedIssues[err.Msg] {
+					continue
+				}
+				uniqReportedIssues[err.Msg] = true
+				lintCtx.Log.Errorf("typechecking error: %s", err.Msg)
+			} else {
+				i.Pkg = itErr.Pkg // to save to cache later
+				issues = append(issues, *i)
+			}
+		}
+	}
+	return issues, nil
 }
 
 func (lnt *Linter) preRun(lintCtx *linter.Context) error {

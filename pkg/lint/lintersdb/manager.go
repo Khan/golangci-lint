@@ -3,6 +3,7 @@ package lintersdb
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"plugin"
 
 	"golang.org/x/tools/go/analysis"
@@ -39,8 +40,24 @@ func (m *Manager) WithCustomLinters() *Manager {
 		m.log = report.NewLogWrapper(logutils.NewStderrLog(""), &report.Data{})
 	}
 	if m.cfg != nil {
+		var basePath string
+		var err error
+		if m.cfg.ConfigFilePath != nil {
+			basePath, err = filepath.Abs(filepath.Dir(*m.cfg.ConfigFilePath))
+			if err != nil {
+				m.log.Errorf("Unable to get base directory based on config: %s. %v",
+					*m.cfg.ConfigFilePath, err)
+			}
+		} else {
+			basePath, err = os.Getwd()
+			if err != nil {
+				m.log.Errorf("Unable to get current working directory. %v",
+					err)
+			}
+		}
+
 		for name, settings := range m.cfg.LintersSettings.Custom {
-			lc, err := m.loadCustomLinterConfig(name, settings)
+			lc, err := m.loadCustomLinterConfig(name, basePath, settings)
 
 			if err != nil {
 				m.log.Errorf("Unable to load custom analyzer %s:%s, %v",
@@ -357,7 +374,11 @@ func (m Manager) GetAllLinterConfigsForPreset(p string) []*linter.Config {
 	return ret
 }
 
-func (m Manager) loadCustomLinterConfig(name string, settings config.CustomLinterSettings) (*linter.Config, error) {
+func (m Manager) loadCustomLinterConfig(name, basePath string, settings config.CustomLinterSettings) (*linter.Config, error) {
+	if !filepath.IsAbs(settings.Path) {
+		settings.Path = filepath.Join(basePath, settings.Path)
+	}
+
 	analyzer, err := m.getAnalyzerPlugin(settings.Path)
 	if err != nil {
 		return nil, err

@@ -532,6 +532,10 @@ type Config struct {
 		PathPrefix          string `mapstructure:"path-prefix"`
 	}
 
+	// The path that our config is from. nil if we weren't provided with one
+	// and we didn't find one ourselves.
+	ConfigFilePath *string
+
 	LintersSettings LintersSettings `mapstructure:"linters-settings"`
 	Linters         Linters
 	Issues          Issues

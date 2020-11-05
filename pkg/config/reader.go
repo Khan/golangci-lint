@@ -85,6 +85,9 @@ func (r *FileReader) parseConfig() error {
 		os.Exit(0)
 	}
 
+	// Remember where our config came from
+	r.cfg.ConfigFilePath = &usedConfigFile
+
 	return nil
 }
 

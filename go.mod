@@ -41,7 +41,7 @@ require (
 	github.com/nishanths/exhaustive v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/polyfloyd/go-errorlint v0.0.0-20201006195004-351e25ade6e3
-	github.com/ryancurrah/gomodguard v1.1.0
+	github.com/ryancurrah/gomodguard v1.2.0
 	github.com/ryanrolds/sqlclosecheck v0.3.0
 	github.com/securego/gosec/v2 v2.5.0
 	github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c
@@ -65,7 +65,7 @@ require (
 	github.com/valyala/quicktemplate v1.6.3
 	golang.org/x/sys v0.0.0-20201009025420-dfb3f7c4e634 // indirect
 	golang.org/x/tools v0.0.0-20201013201025-64a9e34f3752
-	gopkg.in/yaml.v2 v2.3.0
+	gopkg.in/yaml.v2 v2.4.0
 	honnef.co/go/tools v0.0.1-2020.1.6
 	mvdan.cc/gofumpt v0.0.0-20200802201014-ab5a8192947d
 	mvdan.cc/interfacer v0.0.0-20180901003855-c20040233aed

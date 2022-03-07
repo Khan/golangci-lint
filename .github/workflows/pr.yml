@@ -17,7 +17,7 @@ jobs:
         with:
           go-version: 1.15
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Check go mod
         run: |
           go mod tidy
@@ -28,7 +28,7 @@ jobs:
   golangci-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: lint
         uses: golangci/golangci-lint-action@v2.3.0
         with:
@@ -37,7 +37,7 @@ jobs:
     needs: golangci-lint # run after golangci-lint action to not produce duplicated errors
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Go
         uses: actions/setup-go@v2
         with:
@@ -49,7 +49,7 @@ jobs:
     needs: golangci-lint # run after golangci-lint action to not produce duplicated errors
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Go
         uses: actions/setup-go@v2
         with:
@@ -66,7 +66,7 @@ jobs:
           - 1.14
           - 1.15
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Go
         uses: actions/setup-go@v2
         with:
@@ -86,7 +86,7 @@ jobs:
       # needed for github-action-config.json generation
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Unshallow
         run: git fetch --prune --unshallow
       - name: Install Go
